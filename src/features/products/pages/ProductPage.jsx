@@ -3,33 +3,34 @@ import { Topbar } from "../../../shared/components/Topbar";
 import { ProductRow } from "../component/ProductRow";
 import { BottomSheet } from "../../../shared/components/BottomSheet";
 import { ProductForm } from "../component/ProductForm";
+import { IngredientRow } from "../component/IngredientRow";
 
-export function ProductsPage() {
+export function ProductPage() {
   const [openSheet, setOpenSheet] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   const [products, setProducts] = useState([
-    { id: 1, name: "Spritz", price: 8 },
-    { id: 2, name: "Mojito", price: 10 },
-    { id: 3, name: "Negroni", price: 9 },
-    { id: 4, name: "Birra", price: 5 },
-    { id: 5, name: "Gin Tonic", price: 9 },
-    { id: 6, name: "Americano", price: 8 },
-    { id: 7, name: "Coca Cola", price: 3 },
-    { id: 8, name: "Acqua", price: 2 },
+    { id: 1, name: "Spritz", price: 8, cost: 2.2 },
+    { id: 2, name: "Mojito", price: 10, cost: 2.5 },
+    { id: 3, name: "Negroni", price: 9, cost: 2.8 },
+    { id: 4, name: "Birra", price: 5, cost: 1.5 },
+    { id: 5, name: "Gin Tonic", price: 9, cost: 2.3 },
+    { id: 6, name: "Americano", price: 8, cost: 2.0 },
+    { id: 7, name: "Coca Cola", price: 3, cost: 0.5 },
+    { id: 8, name: "Acqua", price: 2, cost: 0.3 },
   ]);
 
   const ingredients = [
-    { id: 1, name: "Aperol", cost: 0.8 },
-    { id: 2, name: "Prosecco", cost: 1.2 },
-    { id: 3, name: "Soda", cost: 0.2 },
-    { id: 4, name: "Rum", cost: 1.5 },
-    { id: 5, name: "Menta", cost: 0.3 },
-    { id: 6, name: "Zucchero", cost: 0.2 },
-    { id: 7, name: "Lime", cost: 0.5 },
-    { id: 8, name: "Gin", cost: 1.4 },
-    { id: 9, name: "Campari", cost: 1.0 },
-    { id: 10, name: "Vermouth", cost: 0.9 },
+    { id: 1, name: "Aperol", cost: 0.8, stock: 12, stockMin: 5, trend: -2 },
+    { id: 2, name: "Prosecco", cost: 1.2, stock: 20, stockMin: 8, trend: -3 },
+    { id: 3, name: "Soda", cost: 0.2, stock: 30, stockMin: 10, trend: -1 },
+    { id: 4, name: "Rum", cost: 1.5, stock: 10, stockMin: 4, trend: -2 },
+    { id: 5, name: "Menta", cost: 0.3, stock: 5, stockMin: 3, trend: -1 },
+    { id: 6, name: "Zucchero", cost: 0.2, stock: 15, stockMin: 5, trend: 0 },
+    { id: 7, name: "Lime", cost: 0.5, stock: 8, stockMin: 4, trend: -2 },
+    { id: 8, name: "Gin", cost: 1.4, stock: 3, stockMin: 4, trend: -1 },
+    { id: 9, name: "Campari", cost: 1.0, stock: 11, stockMin: 5, trend: -2 },
+    { id: 10, name: "Vermouth", cost: 0.9, stock: 7, stockMin: 3, trend: -1 },
   ];
 
   // 👉 ADD / EDIT LOGIC
@@ -74,7 +75,7 @@ export function ProductsPage() {
           <div className="sticky top-0 bg-white z-10 grid grid-cols-5 gap-3 px-5 py-3 border-b font-medium text-xs text-gray-400 uppercase">
             <span>Nome</span>
             <span>Prezzo Vendita</span>
-            <span>Costo Reale</span>
+            <span>Costo Preparazione</span>
             <span>Margine</span>
             <span></span>
           </div>
@@ -105,23 +106,26 @@ export function ProductsPage() {
 
         <div className="max-h-80 overflow-y-auto">
           {/* HEADER */}
-          <div className="sticky top-0 bg-white z-10 grid grid-cols-5 gap-3 px-5 py-3 border-b font-medium text-xs text-gray-400 uppercase">
-            <span>Nome</span>
+          <div className="sticky top-0 bg-white z-10 grid grid-cols-6 gap-3 px-5 py-3 border-b font-medium text-xs text-gray-400 uppercase text-center">
+            <span >Nome</span>
             <span>Costo</span>
-            <span></span>
-            <span></span>
+            <span>Stock</span>
+            <span>Stato</span>
+            <span>Trend</span>
             <span></span>
           </div>
 
-          {ingredients.map((i) => (
-            <div
-              key={i.id}
-              className="grid grid-cols-5 gap-3 px-5 py-3 border-b text-sm"
-            >
-              <span>{i.name}</span>
-              <span>€{i.cost}</span>
-            </div>
+          {ingredients.map((p) => (
+            <IngredientRow
+              key={p.id}
+              {...p}
+              onEdit={() => {
+                setSelectedProduct(p);
+                setOpenSheet(true);
+              }}
+            />
           ))}
+
         </div>
       </div>
 
