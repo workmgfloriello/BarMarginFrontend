@@ -1,23 +1,35 @@
 import { useAppStore } from "../../../store/AppContext";
+import { Topbar } from "../../../shared/components/Topbar";
 
 export function ClosedBills() {
   const { state } = useAppStore();
   const { closedBills } = state;
+  const {dispatch} = useAppStore();
 
   const totalRevenue = closedBills.reduce((sum, bill) => sum + bill.total, 0);
+  console.log("ClosedBills - closedBills:", closedBills);
+  const onRecoverBill = (bill) => {
+    console.log("Recovering bill with ID:", bill.id);
+    dispatch({ type: "RECOVER_BILL", payload: bill.id });
+    dispatch({type:"RESTORE_TABLE", payload: {tableName: bill.tableName, orderItems: bill.items}});
+  };
 
   if (closedBills.length === 0) {
     return (
-      <div className="bg-white p-4 rounded-2xl shadow">
+      <><Topbar/><div className="bg-white p-4 rounded-2xl shadow w-full">
         <h3 className="font-semibold mb-2">Conti Chiusi</h3>
         <p className="text-gray-400 text-sm">Nessun conto chiuso ancora</p>
-      </div>
+      </div></>
     );
   }
 
   return (
-    <div className="bg-white p-4 rounded-2xl shadow">
-      <div className="flex justify-between items-center mb-4">
+    <>
+   
+    <div className="bg-white p-4 rounded-2xl shadow w-full"> 
+
+      <div className="flex justify-between items-center mb-4">  
+            <Topbar/>
         <h3 className="font-semibold">Conti Chiusi</h3>
         <span className="text-green-600 font-bold">
           Totale: €{totalRevenue.toFixed(2)}
@@ -36,6 +48,12 @@ export function ClosedBills() {
                 <span className="font-bold text-green-600">
                   €{bill.total.toFixed(2)}
                 </span>
+                <button
+                  onClick={() => onRecoverBill(bill)}
+                  className="bg-black text-white px-3 py-1 rounded-lg text-xs"
+                >
+                  Recupera
+                </button>
               </div>
             </div>
 
@@ -54,7 +72,8 @@ export function ClosedBills() {
 
           </div>
         ))}
+
       </div>
-    </div>
+    </div></>
   );
 }

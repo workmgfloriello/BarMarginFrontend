@@ -24,7 +24,20 @@ export function appReducer(state, action) {
           t.id === action.payload.id ? { ...t, name: action.payload.name } : t
         ),
       };
+    case "RESTORE_TABLE":
+      const tableExists = state.tables.some(t => t.name === action.payload.tableName);
 
+      return {
+        ...state,
+        tables: tableExists
+          ? state.tables.map(t =>
+            t.name === action.payload.tableName
+              ? { ...t, orderItems: action.payload.orderItems }
+              : t
+          )
+          : [...state.tables, { id: action.payload.id, orderItems: action.payload.orderItems }],
+        closedBills: state.closedBills.filter(b => b.id !== action.payload.id),
+      };
     case "TOGGLE_RESERVED":
       return {
         ...state,
@@ -55,8 +68,19 @@ export function appReducer(state, action) {
           },
         ],
       };
-    }
 
+
+    }
+case "RECOVER_BILL": {
+  const bill = state.closedBills.find(b => b.id === action.payload);
+  if (!bill) return state;
+
+  // rimuovi solo dal storico, ci pensa RESTORE_TABLE al tavolo
+  return {
+    ...state,
+    closedBills: state.closedBills.filter(b => b.id !== action.payload),
+  };
+}
     // ─── ORDINI ───────────────────────────────────────
     case "ADD_PRODUCT_TO_ORDER":
       return {
@@ -68,8 +92,8 @@ export function appReducer(state, action) {
             ...table,
             orderItems: existing
               ? table.orderItems.map(i =>
-                  i.id === action.payload.id ? { ...i, qty: i.qty + 1 } : i
-                )
+                i.id === action.payload.id ? { ...i, qty: i.qty + 1 } : i
+              )
               : [...table.orderItems, { ...action.payload, qty: 1 }],
           };
         }),
