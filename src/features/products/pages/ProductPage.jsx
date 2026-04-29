@@ -4,27 +4,20 @@ import { ProductRow } from "../component/ProductRow";
 import { BottomSheet } from "../../../shared/components/BottomSheet";
 import { ProductForm } from "../component/ProductForm";
 import { IngredientRow } from "../component/IngredientRow";
-import { fetchIngredients, fetchProducts } from "../products.api";
+import { useAppStore } from "../../../store/AppContext";
 
 export function ProductPage() {
+  const { state, dispatch } = useAppStore();
+  const { products, ingredients } = state;
+
   const [openSheet, setOpenSheet] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  const [products, setProducts] = useState(fetchProducts());
-
-  const ingredients = fetchIngredients();
-
-  // 👉 ADD / EDIT LOGIC
   const handleSaveProduct = (product) => {
     if (product.id) {
-      setProducts((prev) =>
-        prev.map((p) => (p.id === product.id ? product : p))
-      );
+      dispatch({ type: "UPDATE_PRODUCT", payload: product });
     } else {
-      setProducts((prev) => [
-        ...prev,
-        { ...product, id: Date.now() },
-      ]);
+      dispatch({ type: "ADD_PRODUCT", payload: { ...product, id: Date.now() } });
     }
 
     setOpenSheet(false);
@@ -39,7 +32,6 @@ export function ProductPage() {
       <div className="bg-white p-4 rounded-2xl shadow">
         <div className="flex justify-between mb-4">
           <h3 className="text-lg font-semibold">Inventario Prodotti</h3>
-
           <button
             onClick={() => {
               setSelectedProduct(null);
@@ -52,7 +44,6 @@ export function ProductPage() {
         </div>
 
         <div className="max-h-80 overflow-y-auto text-center">
-          {/* HEADER */}
           <div className="sticky top-0 bg-white z-10 grid grid-cols-5 gap-3 px-5 py-3 border-b font-medium text-xs text-gray-400 uppercase">
             <span>Nome</span>
             <span>Prezzo Vendita</span>
@@ -61,7 +52,6 @@ export function ProductPage() {
             <span></span>
           </div>
 
-          {/* ROWS */}
           {products.map((p) => (
             <ProductRow
               key={p.id}
@@ -79,16 +69,20 @@ export function ProductPage() {
       <div className="mt-10 bg-white p-4 rounded-2xl shadow">
         <div className="flex justify-between mb-4">
           <h3 className="text-lg font-semibold">Inventario Ingredienti</h3>
-
-          <button className="bg-black text-white px-4 py-2 rounded">
+          <button
+            onClick={() => {
+              setSelectedProduct(null);
+              setOpenSheet(true);
+            }}
+            className="bg-black text-white px-4 py-2 rounded"
+          >
             + Aggiungi
           </button>
         </div>
 
         <div className="max-h-80 overflow-y-auto">
-          {/* HEADER */}
           <div className="sticky top-0 bg-white z-10 grid grid-cols-6 gap-3 px-5 py-3 border-b font-medium text-xs text-gray-400 uppercase text-center">
-            <span >Nome</span>
+            <span>Nome</span>
             <span>Costo</span>
             <span>Stock</span>
             <span>Stato</span>
@@ -106,7 +100,6 @@ export function ProductPage() {
               }}
             />
           ))}
-
         </div>
       </div>
 

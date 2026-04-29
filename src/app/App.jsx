@@ -5,6 +5,8 @@ import { CompanyDashboard } from "../features/dashboard/pages/CompanyDashboard";
 import { EmployeeDashboard } from "../features/dashboard/pages/EmployeeDashboard";
 import { ProductPage } from "../features/products/pages/ProductPage";
 import { OrderPage } from "../features/orders/pages/OrderPage";
+import { AppProvider } from "../store/AppContext";
+import { ClosedBills } from "../features/closedBills/pages/ClosedBills";
 
 export default function App() {
   const [role, setRole] = useState(null);
@@ -13,13 +15,16 @@ export default function App() {
   if (!role) return <LoginPage setRole={setRole} />;
 
   return (
-    <div className="flex">
-      <Sidebar role={role} setRole={setRole} setPage={setPage} />
+    <AppProvider>
+      <div className="flex">
+        <Sidebar role={role} setRole={setRole} setPage={setPage} />
 
-      {role === "company" && page === "dashboard" && <CompanyDashboard />}
-      {role === "company" && page === "products" && <ProductPage />}
-      {role === "company" && page === "order" && <OrderPage />}
-      {role === "employee" && <EmployeeDashboard />}
-    </div>
+        {role === "company" && page === "dashboard" && <CompanyDashboard />}
+        {role === "company" && page === "products" && <ProductPage />}
+        {role === "company" && page === "table" && <OrderPage />}
+        {role === "company" && page === "order" && <ClosedBills />}
+        {role === "employee" && <EmployeeDashboard />}
+      </div>
+    </AppProvider>
   );
 }
