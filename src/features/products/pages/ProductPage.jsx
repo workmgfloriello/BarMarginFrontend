@@ -1,25 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Topbar } from "../../../shared/components/Topbar";
 import { ProductRow } from "../component/ProductRow";
 import { BottomSheet } from "../../../shared/components/BottomSheet";
 import { ProductForm } from "../component/ProductForm";
 import { IngredientRow } from "../component/IngredientRow";
-import { useAppStore } from "../../../store/AppContext";
+import useAppStore from "../../../store/useAppStore"; // ← named → default
 
 export function ProductPage() {
-  const { state, dispatch } = useAppStore();
-  const { products, ingredients } = state;
+  const products = useAppStore(state => state.products);
+  const ingredients = useAppStore(state => state.ingredients);
+  const updateProduct = useAppStore(state => state.updateProduct);
+  const addProduct = useAppStore(state => state.addProduct);
 
   const [openSheet, setOpenSheet] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const { loadIngredients } = useAppStore();
+  const { loadProducts } = useAppStore();
+
+  useEffect(() => {
+    loadIngredients();
+    loadProducts();
+  }, []);
 
   const handleSaveProduct = (product) => {
     if (product.id) {
-      dispatch({ type: "UPDATE_PRODUCT", payload: product });
+      updateProduct(product);         // ← era dispatch({ type: "UPDATE_PRODUCT" })
     } else {
-      dispatch({ type: "ADD_PRODUCT", payload: { ...product, id: Date.now() } });
+      addProduct({ ...product, id: Date.now() }); // ← era dispatch({ type: "ADD_PRODUCT" })
     }
-
     setOpenSheet(false);
     setSelectedProduct(null);
   };
@@ -86,7 +94,7 @@ export function ProductPage() {
             <span>Costo</span>
             <span>Stock</span>
             <span>Stato</span>
-            <span>Trend</span>
+            <span>€/Unità</span>
             <span></span>
           </div>
 

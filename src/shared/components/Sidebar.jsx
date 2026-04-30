@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   LayoutDashboard, Package, ClipboardList, Table2,
-  ChevronLeft, ChevronRight, LogOut,Book,Table
+  ChevronLeft, ChevronRight, LogOut,Book,Table,ChefHat
 } from "lucide-react";
 
 export function Sidebar({ role, setRole, setPage }) {
@@ -10,6 +10,7 @@ export function Sidebar({ role, setRole, setPage }) {
   const itemsCompany = [
     { name: "Overview", icon: LayoutDashboard, key: "dashboard" },
     { name: "Prodotti", icon: Package, key: "products" },
+    { name: "Ricette", icon: ChefHat, key: "recipes" },
     { name: "Tavoli" , icon:Table, key: "table"},
     { name: "Storico Ordini" , icon:Book, key: "order"},
   ];

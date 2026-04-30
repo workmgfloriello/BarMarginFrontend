@@ -1,4 +1,4 @@
-export function IngredientRow({ name, cost, stock, stockMin, trend = 0, onEdit }) {
+export function IngredientRow({ name, cost, stock, stockMin, costUnit, onEdit }) {
   // 📦 Stato scorte
   const isLow = stock <= stockMin;
   const isMid = stock <= stockMin * 1.5;
@@ -15,15 +15,8 @@ export function IngredientRow({ name, cost, stock, stockMin, trend = 0, onEdit }
       ? "bg-amber-400"
       : "bg-green-500";
 
-  // 📉 Trend
-  const trendLabel =
-    trend < 0 ? `↓ ${Math.abs(trend)}/g` :
-    trend > 0 ? `↑ ${trend}/g` :
-    "—";
 
-  // ⏳ Giorni rimanenti
-  const daysLeft =
-    trend < 0 ? Math.floor(stock / Math.abs(trend)) : null;
+
 
   const stockPercent = Math.min((stock / (stockMin * 2)) * 100, 100);
 
@@ -55,12 +48,7 @@ export function IngredientRow({ name, cost, stock, stockMin, trend = 0, onEdit }
 
       {/* TREND + GIORNI */}
       <div className="text-xs text-gray-600">
-        <div>{trendLabel}</div>
-        {daysLeft && (
-          <div className="text-red-500">
-            {daysLeft}g
-          </div>
-        )}
+        <div>€{costUnit?.toFixed(2)}/g</div>
       </div>
 
       {/* ACTION */}

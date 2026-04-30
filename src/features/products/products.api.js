@@ -40,16 +40,16 @@ export function fetchProducts() {
 
 export function fetchIngredients() {
     return [
-        { id: 1, name: "Aperol", cost: 0.8, stock: 12, stockMin: 5, trend: -2 },
-        { id: 2, name: "Prosecco", cost: 1.2, stock: 20, stockMin: 8, trend: -3 },
-        { id: 3, name: "Soda", cost: 0.2, stock: 30, stockMin: 10, trend: -1 },
-        { id: 4, name: "Rum", cost: 1.5, stock: 10, stockMin: 4, trend: -2 },
-        { id: 5, name: "Menta", cost: 0.3, stock: 5, stockMin: 3, trend: -1 },
-        { id: 6, name: "Zucchero", cost: 0.2, stock: 15, stockMin: 5, trend: 0 },
-        { id: 7, name: "Lime", cost: 0.5, stock: 8, stockMin: 4, trend: -2 },
-        { id: 8, name: "Gin", cost: 1.4, stock: 3, stockMin: 4, trend: -1 },
-        { id: 9, name: "Campari", cost: 1.0, stock: 11, stockMin: 5, trend: -2 },
-        { id: 10, name: "Vermouth", cost: 0.9, stock: 7, stockMin: 3, trend: -1 },
+        { id: 1, name: "Aperol", cost: 0.8, stock: 12, stockMin: 5, costUnit: 0.4 },
+        { id: 2, name: "Prosecco", cost: 1.2, stock: 20, stockMin: 8, costUnit: 0.6 },
+        { id: 3, name: "Soda", cost: 0.2, stock: 30, stockMin: 10, costUnit: 0.1 },
+        { id: 4, name: "Rum", cost: 1.5, stock: 10, stockMin: 4, costUnit: 0.75 },
+        { id: 5, name: "Menta", cost: 0.3, stock: 5, stockMin: 3, costUnit: 0.15 },
+        { id: 6, name: "Zucchero", cost: 0.2, stock: 15, stockMin: 5, costUnit: 0.1 },
+        { id: 7, name: "Lime", cost: 0.5, stock: 8, stockMin: 4, costUnit: 0.25 },
+        { id: 8, name: "Gin", cost: 1.4, stock: 3, stockMin: 4, costUnit: 0.7 },
+        { id: 9, name: "Campari", cost: 1.0, stock: 11, stockMin: 5, costUnit: 0.5 },
+        { id: 10, name: "Vermouth", cost: 0.9, stock: 7, stockMin: 3, costUnit: 0.45 },
     ]
 }
 

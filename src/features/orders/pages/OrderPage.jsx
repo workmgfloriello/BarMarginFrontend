@@ -5,11 +5,16 @@ import { OrdersTopbar } from "../component/OrdersTopbar";
 import { BottomSheet } from "../../../shared/components/BottomSheet";
 import { AddTableSheet } from "../component/AddTableSheet";
 import { InfoTableSheet } from "../component/InfoTableSheet";
-import { useAppStore } from "../../../store/AppContext";
+import useAppStore from "../../../store/useAppStore";
 
 export function OrderPage() {
-  const { state, dispatch } = useAppStore();
-  const { tables, products } = state;
+  const {
+    tables,
+    products,
+    addTable,
+    addProductToOrder,
+    removeProductFromOrder,
+  } = useAppStore();
 
   const [selectedTableId, setSelectedTableId] = useState(null);
   const [openProductSheet, setOpenProductSheet] = useState(false);
@@ -18,31 +23,28 @@ export function OrderPage() {
 
   const selectedTable = tables.find((t) => t.id === selectedTableId);
 
+  // 🪑 ADD TABLE (Zustand)
   const onAddTable = (tableName) => {
-    dispatch({
-      type: "ADD_TABLE",
-      payload: {
-        id: tables[tables.length - 1].id + 1,
-        name: tableName,
-        orderItems: [],
-      },
+    const newId =
+      tables.length > 0 ? Math.max(...tables.map((t) => t.id)) + 1 : 1;
+
+    addTable({
+      id: newId,
+      name: tableName,
+      orderItems: [],
     });
   };
 
+  // 🛒 ADD PRODUCT
   const addProduct = (product) => {
-    dispatch({
-      type: "ADD_PRODUCT_TO_ORDER",
-      tableId: selectedTableId,
-      payload: product,
-    });
+    if (!selectedTableId) return;
+    addProductToOrder(selectedTableId, product);
   };
 
+  // ❌ REMOVE PRODUCT
   const removeProduct = (productId) => {
-    dispatch({
-      type: "REMOVE_PRODUCT_FROM_ORDER",
-      tableId: selectedTableId,
-      payload: productId,
-    });
+    if (!selectedTableId) return;
+    removeProductFromOrder(selectedTableId, productId);
   };
 
   const changeMode = (type) => {
@@ -57,6 +59,7 @@ export function OrderPage() {
   return (
     <div className="flex-1 p-6 bg-gray-100">
       <Topbar />
+
       <CustomTopbar
         children={
           <OrdersTopbar
@@ -97,16 +100,10 @@ export function OrderPage() {
           }`}
         >
           <div className="p-4 border-b flex justify-between">
-            <h2 className="font-bold">{selectedTable?.name}</h2>
-            <button
-              onClick={() => {
-                setSelectedTableId(null);
-                setOpenProductSheet(false);
-              }}
-            >
-              ✕
-            </button>
+            <h2 className="font-bold">{selectedTable.name}</h2>
+            <button onClick={() => setSelectedTableId(null)}>✕</button>
           </div>
+
           <div className="p-4">
             <div className="space-y-2">
               {selectedTable.orderItems.map((item) => (
@@ -114,9 +111,13 @@ export function OrderPage() {
                   key={item.id}
                   className="flex justify-between items-center border-b py-2"
                 >
-                  <span>{item.name} x{item.qty}</span>
+                  <span>
+                    {item.name} x{item.qty}
+                  </span>
+
                   <div className="flex gap-2 items-center">
                     <span>€{(item.price * item.qty).toFixed(2)}</span>
+
                     <button
                       onClick={() => removeProduct(item.id)}
                       className="text-red-500"
@@ -163,10 +164,7 @@ export function OrderPage() {
         </div>
 
         {sheet === "addTable" && (
-          <AddTableSheet
-            onAddTable={onAddTable}
-            onClose={() => setSheet(null)}
-          />
+          <AddTableSheet onAddTable={onAddTable} onClose={() => setSheet(null)} />
         )}
 
         {sheet === "info" && (
@@ -189,6 +187,7 @@ export function OrderPage() {
           <h3 className="font-bold">Prodotti</h3>
           <button onClick={() => setOpenProductSheet(false)}>✕</button>
         </div>
+
         <div className="p-4 grid grid-cols-2 gap-3 max-h-full overflow-y-auto">
           {products.map((p) => (
             <button

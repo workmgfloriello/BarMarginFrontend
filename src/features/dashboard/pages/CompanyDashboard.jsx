@@ -1,26 +1,27 @@
 import { Topbar } from "../../../shared/components/Topbar";
 import { StatCard } from "../component/StatsCard";
-import { useAppStore } from "../../../store/AppContext";
+import useAppStore from "../../../store/useAppStore";
 
 export function CompanyDashboard() {
-  const { state } = useAppStore();
-  const { tables, products } = state;
+  const { tables, products, closedBills, getProductMargin } = useAppStore();
 
-  // 💰 Ricavi totali da tutti i tavoli
-const totalRevenue = state.closedBills
-  .reduce((sum, bill) => sum + bill.total, 0);
+  // 💰 Ricavi totali
+  const totalRevenue = closedBills.reduce(
+    (sum, bill) => sum + bill.total,
+    0
+  );
 
   // 🛍️ Prodotti venduti totali
   const totalSold = tables
     .flatMap((t) => t.orderItems)
     .reduce((sum, i) => sum + i.qty, 0);
 
-  // 📊 Margine medio sui prodotti
+  // 📊 Margine medio (ORA basato su ingredienti via store)
   const avgMargin =
     products.length > 0
       ? products.reduce((sum, p) => {
-          const margin = p.cost ? ((p.price - p.cost) / p.price) * 100 : 0;
-          return sum + margin;
+          const marginData = getProductMargin(p.id);
+          return sum + (marginData?.marginPct || 0);
         }, 0) / products.length
       : 0;
 
@@ -37,12 +38,13 @@ const totalRevenue = state.closedBills
     .sort((a, b) => b.totalQty - a.totalQty)
     .slice(0, 3);
 
-  // ⚠️ Prodotti con margine basso (< 30%)
+  // ⚠️ Prodotti low margin (da store logic)
   const lowMarginProducts = products.filter((p) => {
-    if (!p.cost) return false;
-    const margin = ((p.price - p.cost) / p.price) * 100;
-    return margin < 30;
+    const margin = getProductMargin(p.id);
+    return margin && margin.marginPct < 30;
   });
+
+  const activeTables = tables.filter((t) => t.orderItems.length > 0).length;
 
   return (
     <div className="flex-1 p-6 bg-gray-100">
@@ -50,7 +52,7 @@ const totalRevenue = state.closedBills
 
       <div className="grid grid-cols-4 gap-4 mb-6">
         <StatCard
-          title="Ricavi Oggi"
+          title="Ricavi Totali"
           value={`€${totalRevenue.toFixed(2)}`}
         />
         <StatCard
@@ -63,11 +65,12 @@ const totalRevenue = state.closedBills
         />
         <StatCard
           title="Tavoli Attivi"
-          value={tables.filter((t) => t.orderItems.length > 0).length}
+          value={activeTables}
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
+        {/* INSIGHT */}
         <div className="bg-white p-4 rounded-2xl shadow">
           <h3 className="font-semibold mb-2">Insight</h3>
           <ul className="text-sm text-gray-600 space-y-1">
@@ -76,15 +79,16 @@ const totalRevenue = state.closedBills
             ) : (
               <li>✅ Tutti i prodotti hanno buon margine</li>
             )}
+
             {topProducts[0] && (
               <li>🔥 {topProducts[0].name} è il più venduto</li>
             )}
-            {totalSold === 0 && (
-              <li>📭 Nessun ordine ancora</li>
-            )}
+
+            {totalSold === 0 && <li>📭 Nessun ordine ancora</li>}
           </ul>
         </div>
 
+        {/* TOP PRODOTTI */}
         <div className="bg-white p-4 rounded-2xl shadow">
           <h3 className="font-semibold mb-2">Top Prodotti</h3>
           <ul className="text-sm text-gray-600 space-y-1">
